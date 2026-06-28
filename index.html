@@ -3,150 +3,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="description" content="Mini Clash Mobile - Um jogo de estratégia em tempo real para mobile">
+    <meta name="description" content="Mini Clash Premium - Jogo de estratégia com Clash Royale style">
     <meta name="theme-color" content="#222">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Mini Clash">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23222' width='192' height='192'/><text x='96' y='110' font-size='80' font-weight='bold' fill='%2300ffcc' text-anchor='middle' font-family='Arial'>⚔</text></svg>">
     
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23222' width='192' height='192'/><text x='96' y='110' font-size='80' font-weight='bold' fill='%2300ffcc' text-anchor='middle' font-family='Arial'>⚔</text></svg>">
-    
-    <title>Mini Clash Mobile</title>
+    <title>Mini Clash Premium</title>
     <style>
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
-            user-select: none; 
-            -webkit-user-select: none; 
-            -webkit-touch-callout: none;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
         }
-        
-        html, body { 
-            width: 100%; 
-            height: 100%; 
+
+        html, body {
+            width: 100%;
+            height: 100%;
             position: fixed;
             overflow: hidden;
         }
-        
-        body { 
-            font-family: Arial, sans-serif; 
-            background: #222; 
-            color: #fff; 
-            display: flex; 
-            flex-direction: column; 
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
             padding: max(0px, env(safe-area-inset-top)) 0 0 0;
             height: 100vh;
         }
-        
-        canvas { 
-            background: #45a049; 
-            display: block; 
-            flex-grow: 1; 
-            width: 100%; 
+
+        .header {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #ffd700;
+            padding-top: max(12px, env(safe-area-inset-top));
+        }
+
+        .header-left, .header-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .tower-hp {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .hp-bar {
+            width: 80px;
+            height: 12px;
+            background: #333;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 2px solid #666;
+        }
+
+        .hp-fill {
             height: 100%;
-            max-height: calc(100vh - 120px - env(safe-area-inset-bottom)); 
-            border-bottom: 4px solid #333;
-            image-rendering: crisp-edges;
-            image-rendering: pixelated;
-            -webkit-touch-callout: none;
+            width: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            transition: width 0.3s ease;
+        }
+
+        .hp-fill.danger {
+            background: linear-gradient(90deg, #f44336, #ff6b6b);
+        }
+
+        .title {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        canvas {
+            background: linear-gradient(180deg, #45a049 0%, #2d7a3a 50%, #1a4d2e 100%);
+            flex: 1;
+            width: 100%;
             touch-action: none;
+            image-rendering: crisp-edges;
+            border-bottom: 3px solid #333;
         }
-        
-        .ui-container { 
-            height: 120px; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-            background: #111; 
-            padding: 5px; 
-            padding-bottom: max(5px, env(safe-area-inset-bottom));
-            flex-shrink: 0;
-        }
-        
-        .elixir-container { 
-            width: 90%; 
-            max-width: 400px; 
-            text-align: center; 
-            margin-bottom: 5px; 
-            font-size: 14px; 
-            font-weight: bold; 
-        }
-        
-        .elixir-bar { 
-            width: 100%; 
-            height: 12px; 
-            background: #444; 
-            border-radius: 6px; 
-            overflow: hidden; 
-            margin-top: 3px; 
-        }
-        
-        .elixir-fill { 
-            height: 100%; 
-            width: 0%; 
-            background: #ca32ca; 
-            transition: width 0.1s linear; 
-        }
-        
-        .controls { 
-            display: flex; 
-            justify-content: center; 
-            gap: 15px; 
-            width: 100%; 
+
+        .controls {
+            background: rgba(0, 0, 0, 0.85);
+            padding: 12px;
+            padding-bottom: max(12px, env(safe-area-inset-bottom));
+            display: flex;
+            gap: 10px;
+            justify-content: center;
             flex-wrap: wrap;
+            border-top: 3px solid #ffd700;
         }
-        
-        .card { 
-            padding: 10px 15px; 
-            font-size: 14px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            background: #333; 
-            color: white; 
-            border: 3px solid #555; 
-            border-radius: 8px; 
-            text-align: center; 
-            min-width: 110px;
+
+        .card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            background: linear-gradient(135deg, #2a2a3e 0%, #1a1a2e 100%);
+            border: 3px solid #555;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 85px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
             -webkit-appearance: none;
-            appearance: none;
-            active-color: transparent;
-            tap-highlight-color: transparent;
-            transition: all 0.2s ease;
-            user-select: none;
         }
-        
-        .card:active { 
+
+        .card-emoji {
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+
+        .card:active {
             transform: scale(0.95);
         }
-        
-        .card.selected { 
-            border-color: #00ffcc; 
-            background: #444; 
-            box-shadow: 0 0 10px #00ffcc; 
+
+        .card.selected {
+            border-color: #ffd700;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #000;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
         }
-        
-        .toast { 
-            position: fixed; 
-            bottom: 20px; 
-            left: 50%; 
-            transform: translateX(-50%); 
-            background: rgba(51, 51, 51, 0.95); 
-            color: #fff; 
-            padding: 12px 20px; 
-            border-radius: 8px; 
-            font-size: 12px; 
-            z-index: 1000; 
-            opacity: 0; 
+
+        .card-cost {
+            background: #ca32ca;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        .elixir-bar-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            padding: 0 10px;
+            width: 100%;
+        }
+
+        .elixir-bar {
+            flex: 1;
+            height: 10px;
+            background: #333;
+            border-radius: 5px;
+            overflow: hidden;
+            border: 2px solid #666;
+        }
+
+        .elixir-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ca32ca, #ff1493);
+            transition: width 0.1s linear;
+            box-shadow: 0 0 10px rgba(202, 50, 202, 0.8);
+        }
+
+        .toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 18px;
+            z-index: 2000;
+            opacity: 0;
             transition: opacity 0.3s;
             backdrop-filter: blur(10px);
+            border: 3px solid #ffd700;
+            font-weight: bold;
         }
-        
-        .toast.show { 
-            opacity: 1; 
+
+        .toast.show {
+            opacity: 1;
         }
 
         @supports (padding: max(0px)) {
@@ -158,285 +205,370 @@
     </style>
 </head>
 <body>
+    <div class="header">
+        <div class="header-left">
+            <div class="tower-hp">
+                💙 <span id="playerHp">1000</span>
+                <div class="hp-bar">
+                    <div id="playerHpBar" class="hp-fill"></div>
+                </div>
+            </div>
+        </div>
+        <div class="title">⚔️ MINI CLASH PREMIUM ⚔️</div>
+        <div class="header-right">
+            <div class="tower-hp">
+                <div class="hp-bar">
+                    <div id="enemyHpBar" class="hp-fill"></div>
+                </div>
+                <span id="enemyHp">1000</span> ❤️
+            </div>
+        </div>
+    </div>
 
     <canvas id="gameCanvas"></canvas>
-    
-    <div class="ui-container">
-        <div class="elixir-container">
-            Elixir: <span id="elixir-text">0</span>/10
-            <div class="elixir-bar"><div id="elixir-fill"></div></div>
+
+    <div class="controls">
+        <div class="elixir-bar-container">
+            <span style="font-size: 14px;">⚡ Elixir:</span>
+            <div class="elixir-bar">
+                <div id="elixirFill" class="elixir-fill"></div>
+            </div>
+            <span id="elixirText" style="min-width: 30px; text-align: right; font-weight: bold;">0/10</span>
         </div>
-        <div class="controls">
-            <div id="card-guerreiro" class="card">Guerreiro<br>(Custo: 3)</div>
-            <div id="card-gigante" class="card">Gigante<br>(Custo: 5)</div>
+        <div id="card-knight" class="card">
+            <div class="card-emoji">🗡️</div>
+            <div>Cavaleiro</div>
+            <div class="card-cost">3</div>
+        </div>
+        <div id="card-giant" class="card">
+            <div class="card-emoji">🛡️</div>
+            <div>Gigante</div>
+            <div class="card-cost">5</div>
+        </div>
+        <div id="card-archer" class="card">
+            <div class="card-emoji">🏹</div>
+            <div>Arqueiro</div>
+            <div class="card-cost">3</div>
+        </div>
+        <div id="card-bomb" class="card">
+            <div class="card-emoji">💣</div>
+            <div>Bomba</div>
+            <div class="card-cost">6</div>
         </div>
     </div>
 
     <div id="toast" class="toast"></div>
 
     <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('service-worker.js')
-                .then(reg => console.log('✓ Service Worker registrado'))
-                .catch(err => console.log('✗ Erro ao registrar SW:', err));
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(frequency, duration, type = 'sine', volume = 0.3) {
+            try {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                osc.frequency.value = frequency;
+                osc.type = type;
+                gain.gain.setValueAtTime(volume, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                osc.start(audioContext.currentTime);
+                osc.stop(audioContext.currentTime + duration);
+            } catch(e) {}
         }
 
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            showToast('💾 Toque no menu para instalar o jogo');
-        });
-
-        function showToast(msg, duration = 3000) {
-            const toast = document.getElementById('toast');
-            toast.textContent = msg;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), duration);
-        }
+        const sounds = {
+            spawn: () => playSound(400, 0.1, 'sine', 0.2),
+            hit: () => playSound(200, 0.15, 'sine', 0.25),
+            victory: () => {
+                playSound(523, 0.2, 'sine', 0.3);
+                setTimeout(() => playSound(659, 0.2, 'sine', 0.3), 150);
+                setTimeout(() => playSound(784, 0.3, 'sine', 0.3), 300);
+            },
+            defeat: () => {
+                playSound(200, 0.3, 'sine', 0.3);
+                setTimeout(() => playSound(150, 0.3, 'sine', 0.3), 200);
+            },
+            select: () => playSound(800, 0.1, 'sine', 0.2)
+        };
 
         const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d", { alpha: false, antialias: false });
+        const ctx = canvas.getContext("2d", { alpha: false });
 
         function resizeCanvas() {
             const dpr = window.devicePixelRatio || 1;
             const rect = canvas.getBoundingClientRect();
-            
             canvas.width = rect.width * dpr;
             canvas.height = rect.height * dpr;
-            
             ctx.scale(dpr, dpr);
         }
 
         let playerElixir = 0;
         let enemyElixir = 0;
-        let selectedRep = null;
-
+        let selectedUnit = null;
         let myTroops = [];
         let enemyTroops = [];
-        let enemyProjectiles = []; 
-        
         let playerTower, enemyTower;
         let canvasWidth, canvasHeight;
+        let gameOver = false;
+        let particles = [];
+
+        const unitTypes = {
+            knight: { cost: 3, hp: 150, speed: 2, radius: 10, color: '#00bcd4', emoji: '🗡️', damage: 2.5, range: 20, attackSpeed: 1 },
+            giant: { cost: 5, hp: 400, speed: 0.8, radius: 16, color: '#ff9800', emoji: '🛡️', damage: 4, range: 25, attackSpeed: 1.5 },
+            archer: { cost: 3, hp: 80, speed: 2.2, radius: 8, color: '#4CAF50', emoji: '🏹', damage: 3, range: 80, attackSpeed: 2 },
+            bomb: { cost: 6, hp: 120, speed: 0.5, radius: 12, color: '#ff5252', emoji: '💣', damage: 8, range: 40, attackSpeed: 0.8, aoe: 50 }
+        };
 
         function initTowers() {
             canvasWidth = canvas.getBoundingClientRect().width;
             canvasHeight = canvas.getBoundingClientRect().height;
-            
-            playerTower = { x: canvasWidth / 2, y: canvasHeight - 50, hp: 1000, maxHp: 1000, color: '#2196F3' };
-            enemyTower = { 
-                x: canvasWidth / 2, y: 50, hp: 1000, maxHp: 1000, color: '#F44336',
-                range: 150, fireRate: 40, lastShot: 0 
-            };
+            playerTower = { x: canvasWidth / 2, y: canvasHeight - 40, hp: 1000, maxHp: 1000, color: '#2196F3' };
+            enemyTower = { x: canvasWidth / 2, y: 40, hp: 1000, maxHp: 1000, color: '#F44336', lastShot: 0 };
         }
-
-        const troopTypes = {
-            guerreiro: { cost: 3, hp: 120, speed: 1.6, radius: 8, color: '#00bcd4', enemyColor: '#e91e63', damage: 1.5, range: 15 },
-            gigante: { cost: 5, hp: 400, speed: 0.7, radius: 14, color: '#ff9800', enemyColor: '#ff5722', damage: 0.8, range: 22 }
-        };
 
         function selectCard(type) {
             document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
-            if (selectedRep === type || type === null) {
-                selectedRep = null;
+            if (selectedUnit === type) {
+                selectedUnit = null;
             } else {
-                selectedRep = type;
+                selectedUnit = type;
                 document.getElementById(`card-${type}`).classList.add('selected');
+                sounds.select();
             }
         }
 
-        document.getElementById('card-guerreiro').addEventListener('pointerdown', (e) => { e.stopPropagation(); selectCard('guerreiro'); });
-        document.getElementById('card-gigante').addEventListener('pointerdown', (e) => { e.stopPropagation(); selectCard('gigante'); });
+        document.getElementById('card-knight').addEventListener('pointerdown', (e) => { e.stopPropagation(); selectCard('knight'); });
+        document.getElementById('card-giant').addEventListener('pointerdown', (e) => { e.stopPropagation(); selectCard('giant'); });
+        document.getElementById('card-archer').addEventListener('pointerdown', (e) => { e.stopPropagation(); selectCard('archer'); });
+        document.getElementById('card-bomb').addEventListener('pointerdown', (e) => { e.stopPropagation(); selectCard('bomb'); });
 
-        canvas.addEventListener('pointerdown', function(event) {
-            if (!selectedRep) return;
-
+        canvas.addEventListener('pointerdown', (event) => {
+            if (gameOver) return;
             const rect = canvas.getBoundingClientRect();
-            const mouseX = event.clientX - rect.left;
-            const mouseY = event.clientY - rect.top;
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
 
-            const config = troopTypes[selectedRep];
-            const midpoint = rect.height / 2;
-            
-            if (mouseY > midpoint && playerElixir >= config.cost) {
-                playerElixir -= config.cost;
+            const distToEnemy = Math.hypot(x - enemyTower.x, y - enemyTower.y);
+            if (distToEnemy < 50 && playerElixir >= 4) {
+                playerElixir -= 4;
+                enemyTower.hp -= 100;
+                createExplosion(enemyTower.x, enemyTower.y);
+                sounds.hit();
                 updateUI();
-                
-                myTroops.push({
-                    x: mouseX, y: mouseY,
-                    hp: config.hp, maxHp: config.hp,
-                    speed: config.speed, radius: config.radius,
-                    damage: config.damage, range: config.range,
-                    color: config.color, isPlayer: true
-                });
+                return;
+            }
 
+            if (!selectedUnit) return;
+            const config = unitTypes[selectedUnit];
+            const midpoint = canvasHeight / 2;
+
+            if (y > midpoint && playerElixir >= config.cost) {
+                playerElixir -= config.cost;
+                sounds.spawn();
+                myTroops.push({
+                    x, y, hp: config.hp, maxHp: config.hp, speed: config.speed, radius: config.radius,
+                    color: config.color, emoji: config.emoji, damage: config.damage, range: config.range,
+                    attackSpeed: config.attackSpeed, lastAttack: 0, isPlayer: true, type: selectedUnit, aoe: config.aoe || 0
+                });
                 selectCard(null);
+                updateUI();
             }
         }, { passive: false });
 
         setInterval(() => {
-            if (playerElixir < 10) { playerElixir = Math.min(10, playerElixir + 0.1); updateUI(); }
-            if (enemyElixir < 10) { enemyElixir = Math.min(10, enemyElixir + 0.08); }
+            if (playerElixir < 10) playerElixir += 0.15;
+            if (enemyElixir < 10) enemyElixir += 0.1;
+            if (playerElixir > 10) playerElixir = 10;
+            if (enemyElixir > 10) enemyElixir = 10;
+            updateUI();
         }, 100);
 
         function updateUI() {
-            document.getElementById("elixir-text").innerText = Math.floor(playerElixir);
-            document.getElementById("elixir-fill").style.width = (playerElixir / 10 * 100) + "%";
+            document.getElementById('elixirText').innerText = Math.floor(playerElixir) + '/10';
+            document.getElementById('elixirFill').style.width = (playerElixir / 10 * 100) + '%';
+            document.getElementById('playerHp').innerText = Math.max(0, Math.floor(playerTower.hp));
+            document.getElementById('enemyHp').innerText = Math.max(0, Math.floor(enemyTower.hp));
+
+            const playerHpPercent = Math.max(0, playerTower.hp / playerTower.maxHp * 100);
+            document.getElementById('playerHpBar').style.width = playerHpPercent + '%';
+            if (playerHpPercent < 30) document.getElementById('playerHpBar').classList.add('danger');
+
+            const enemyHpPercent = Math.max(0, enemyTower.hp / enemyTower.maxHp * 100);
+            document.getElementById('enemyHpBar').style.width = enemyHpPercent + '%';
+            if (enemyHpPercent < 30) document.getElementById('enemyHpBar').classList.add('danger');
         }
 
-        function getDistance(x1, y1, x2, y2) { return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2); }
+        function createExplosion(x, y) {
+            for (let i = 0; i < 10; i++) {
+                particles.push({
+                    x, y, vx: (Math.random() - 0.5) * 4, vy: (Math.random() - 0.5) * 4 - 1, life: 0.5,
+                    color: ['#ff6b6b', '#ffd700', '#ff9800'][Math.floor(Math.random() * 3)]
+                });
+            }
+        }
 
         function enemyAI() {
             if (enemyTower.hp <= 0) return;
-            let hasGigante = myTroops.some(t => t.radius > 10);
-            
-            if (hasGigante && enemyElixir >= 3) {
+            let hasGiant = myTroops.some(t => t.type === 'giant');
+            if (hasGiant && enemyElixir >= 3) {
                 enemyElixir -= 3;
-                enemyTroops.push(createEnemy('guerreiro'));
+                spawnEnemy('knight');
             } else if (enemyElixir >= 5 && Math.random() < 0.02) {
                 enemyElixir -= 5;
-                enemyTroops.push(createEnemy(Math.random() > 0.5 ? 'gigante' : 'guerreiro'));
+                spawnEnemy(['knight', 'giant', 'archer'][Math.floor(Math.random() * 3)]);
             }
         }
 
-        function createEnemy(type) {
-            const config = troopTypes[type];
-            return {
-                x: enemyTower.x + (Math.random() * (canvasWidth * 0.6) - (canvasWidth * 0.3)),
-                y: enemyTower.y + 40,
-                hp: config.hp, maxHp: config.hp,
-                speed: config.speed, radius: config.radius,
-                damage: config.damage, range: config.range,
-                color: config.enemyColor, isPlayer: false
-            };
+        function spawnEnemy(type) {
+            const config = unitTypes[type];
+            enemyTroops.push({
+                x: enemyTower.x + (Math.random() * canvasWidth * 0.4 - canvasWidth * 0.2),
+                y: enemyTower.y + 50,
+                hp: config.hp, maxHp: config.hp, speed: config.speed, radius: config.radius,
+                color: config.color, emoji: config.emoji, damage: config.damage, range: config.range,
+                attackSpeed: config.attackSpeed, lastAttack: 0, isPlayer: false, type: type, aoe: config.aoe || 0
+            });
         }
 
-        function updateTroopList(allies, enemies, targetTower) {
+        function drawUnit(unit) {
+            ctx.fillStyle = unit.color;
+            ctx.beginPath();
+            ctx.arc(unit.x, unit.y, unit.radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.fillStyle = '#fff';
+            ctx.font = `${unit.radius * 1.5}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(unit.emoji, unit.x, unit.y);
+
+            ctx.fillStyle = '#333';
+            ctx.fillRect(unit.x - unit.radius, unit.y - unit.radius - 10, unit.radius * 2, 4);
+            ctx.fillStyle = unit.isPlayer ? '#4CAF50' : '#ff3333';
+            ctx.fillRect(unit.x - unit.radius, unit.y - unit.radius - 10, (unit.hp / unit.maxHp) * unit.radius * 2, 4);
+        }
+
+        function updateUnits(allies, enemies, targetTower) {
             for (let i = allies.length - 1; i >= 0; i--) {
-                let t = allies[i];
-                if (t.hp <= 0) { allies.splice(i, 1); continue; }
+                let u = allies[i];
+                if (u.hp <= 0) { allies.splice(i, 1); continue; }
 
-                let closestEnemy = null;
-                let closestDist = Infinity;
-
+                let target = null, minDist = Infinity;
                 for (let e of enemies) {
-                    let dist = getDistance(t.x, t.y, e.x, e.y);
-                    if (dist < closestDist) { closestDist = dist; closestEnemy = e; }
+                    let d = Math.hypot(e.x - u.x, e.y - u.y);
+                    if (d < minDist) { minDist = d; target = e; }
                 }
 
-                let distToTower = getDistance(t.x, t.y, targetTower.x, targetTower.y);
+                let distToTower = Math.hypot(targetTower.x - u.x, targetTower.y - u.y);
 
-                if (closestEnemy && closestDist < 140) { 
-                    if (closestDist > t.range) {
-                        let angle = Math.atan2(closestEnemy.y - t.y, closestEnemy.x - t.x);
-                        t.x += Math.cos(angle) * t.speed; t.y += Math.sin(angle) * t.speed;
-                    } else { closestEnemy.hp -= t.damage; }
-                } else if (targetTower.hp > 0 && distToTower > 35) {
-                    let angle = Math.atan2(targetTower.y - t.y, targetTower.x - t.x);
-                    t.x += Math.cos(angle) * t.speed; t.y += Math.sin(angle) * t.speed;
+                if (target && minDist < 150) {
+                    if (minDist > u.range) {
+                        let angle = Math.atan2(target.y - u.y, target.x - u.x);
+                        u.x += Math.cos(angle) * u.speed;
+                        u.y += Math.sin(angle) * u.speed;
+                    } else {
+                        u.lastAttack++;
+                        if (u.lastAttack > 30 / u.attackSpeed) {
+                            target.hp -= u.damage;
+                            sounds.hit();
+                            if (u.aoe) {
+                                for (let e of enemies) {
+                                    if (Math.hypot(e.x - target.x, e.y - target.y) < u.aoe) {
+                                        e.hp -= u.damage * 0.5;
+                                    }
+                                }
+                                createExplosion(target.x, target.y);
+                            }
+                            u.lastAttack = 0;
+                        }
+                    }
+                } else if (targetTower.hp > 0 && distToTower > 40) {
+                    let angle = Math.atan2(targetTower.y - u.y, targetTower.x - u.x);
+                    u.x += Math.cos(angle) * u.speed;
+                    u.y += Math.sin(angle) * u.speed;
                 } else if (targetTower.hp > 0) {
-                    targetTower.hp -= t.damage;
-                    if (targetTower.hp <= 0) targetTower.hp = 0;
-                } else {
-                    t.y += t.isPlayer ? -t.speed : t.speed;
+                    u.lastAttack++;
+                    if (u.lastAttack > 30 / u.attackSpeed) {
+                        targetTower.hp -= u.damage;
+                        sounds.hit();
+                        u.lastAttack = 0;
+                    }
                 }
-
-                ctx.fillStyle = t.color;
-                ctx.beginPath(); ctx.arc(t.x, t.y, t.radius, 0, Math.PI * 2); ctx.fill();
-
-                ctx.fillStyle = "#333";
-                ctx.fillRect(t.x - t.radius, t.y - t.radius - 8, t.radius * 2, 4);
-                ctx.fillStyle = t.isPlayer ? "#4CAF50" : "#ff3333";
-                ctx.fillRect(t.x - t.radius, t.y - t.radius - 8, (t.hp / t.maxHp) * (t.radius * 2), 4);
+                drawUnit(u);
             }
+        }
+
+        function drawTower(tower) {
+            if (tower.hp <= 0) return;
+            ctx.fillStyle = tower.color;
+            ctx.fillRect(tower.x - 30, tower.y - 30, 60, 60);
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(tower.x - 30, tower.y - 30, 60, 60);
+            ctx.fillStyle = '#ffd700';
+            ctx.font = 'bold 40px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('🏰', tower.x, tower.y);
         }
 
         function gameLoop() {
             const rect = canvas.getBoundingClientRect();
             ctx.clearRect(0, 0, rect.width, rect.height);
 
-            ctx.strokeStyle = "rgba(255,255,255,0.3)"; 
-            ctx.lineWidth = 4;
-            ctx.beginPath(); 
-            ctx.moveTo(0, rect.height / 2); 
-            ctx.lineTo(rect.width, rect.height / 2); 
-            ctx.stroke();
+            if (!gameOver) {
+                enemyAI();
+                updateUnits(myTroops, enemyTroops, enemyTower);
+                updateUnits(enemyTroops, myTroops, playerTower);
+            }
 
-            enemyAI();
             drawTower(playerTower);
             drawTower(enemyTower);
 
-            updateTroopList(myTroops, enemyTroops, enemyTower);
-            updateTroopList(enemyTroops, myTroops, playerTower);
-
-            if (enemyTower.hp > 0) {
-                enemyTower.lastShot++;
-                let target = null; 
-                let closestDist = enemyTower.range;
-                for (let t of myTroops) {
-                    let dist = getDistance(enemyTower.x, enemyTower.y, t.x, t.y);
-                    if (dist < closestDist) { closestDist = dist; target = t; }
-                }
-                if (target && enemyTower.lastShot >= enemyTower.fireRate) {
-                    enemyProjectiles.push({ x: enemyTower.x, y: enemyTower.y, target: target, speed: 5, damage: 20 });
-                    enemyTower.lastShot = 0;
-                }
-            }
-
-            for (let i = enemyProjectiles.length - 1; i >= 0; i--) {
-                let p = enemyProjectiles[i];
-                if (!myTroops.includes(p.target)) { enemyProjectiles.splice(i, 1); continue; }
-                let angle = Math.atan2(p.target.y - p.y, p.target.x - p.x);
-                p.x += Math.cos(angle) * p.speed; 
-                p.y += Math.sin(angle) * p.speed;
-                ctx.fillStyle = "#ffeb3b";
-                ctx.beginPath(); 
-                ctx.arc(p.x, p.y, 4, 0, Math.PI * 2); 
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.2;
+                p.life -= 0.016;
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.life;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
                 ctx.fill();
-                if (getDistance(p.x, p.y, p.target.x, p.target.y) < p.target.radius) {
-                    p.target.hp -= p.damage; 
-                    enemyProjectiles.splice(i, 1);
-                }
+                ctx.globalAlpha = 1;
+                if (p.life <= 0) particles.splice(i, 1);
             }
 
-            if (playerTower.hp <= 0) {
-                ctx.fillStyle = "red"; 
-                ctx.font = "bold 24px Arial"; 
-                ctx.textAlign = "center"; 
-                ctx.fillText("VOCÊ PERDEU!", rect.width / 2, rect.height / 2);
-            } else if (enemyTower.hp <= 0) {
-                ctx.fillStyle = "gold"; 
-                ctx.font = "bold 24px Arial"; 
-                ctx.textAlign = "center"; 
-                ctx.fillText("VITÓRIA!", rect.width / 2, rect.height / 2);
+            updateUI();
+
+            if (playerTower.hp <= 0 && !gameOver) {
+                gameOver = true;
+                sounds.defeat();
+                showToast('😢 VOCÊ PERDEU!', 'red');
+            } else if (enemyTower.hp <= 0 && !gameOver) {
+                gameOver = true;
+                sounds.victory();
+                showToast('🎉 VITÓRIA!', 'gold');
             } else {
                 requestAnimationFrame(gameLoop);
             }
         }
 
-        function drawTower(tower) {
-            if (tower.hp <= 0) return;
-            ctx.fillStyle = tower.color; 
-            ctx.fillRect(tower.x - 25, tower.y - 25, 50, 50);
-            ctx.fillStyle = "#333"; 
-            ctx.fillRect(tower.x - 25, tower.y - 38, 50, 6);
-            ctx.fillStyle = "#4CAF50"; 
-            ctx.fillRect(tower.x - 25, tower.y - 38, (tower.hp / tower.maxHp) * 50, 6);
+        function showToast(text, color = 'gold') {
+            const toast = document.getElementById('toast');
+            toast.textContent = text;
+            toast.style.color = color;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        window.addEventListener('resize', () => {
-            resizeCanvas();
-            initTowers();
-        });
-
-        document.addEventListener('touchmove', function(e) {
-            e.preventDefault();
-        }, { passive: false });
-
-        document.addEventListener('gesturestart', function(e) {
-            e.preventDefault();
-        });
-
+        window.addEventListener('resize', () => { resizeCanvas(); initTowers(); });
+        document.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
         resizeCanvas();
         initTowers();
         gameLoop();
