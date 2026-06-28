@@ -3,32 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="description" content="Mini Clash Premium - Jogo de estratégia com Clash Royale style">
-    <meta name="theme-color" content="#222">
+    <meta name="description" content="Royale Legends - Jogo de estratégia em tempo real tipo Clash Royale">
+    <meta name="theme-color" content="#1a1a2e">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Mini Clash">
-    
-    <title>Mini Clash Premium</title>
+    <title>Royale Legends</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        html, body {
-            width: 100%;
-            height: 100%;
-            position: fixed;
-            overflow: hidden;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
+        html, body { width: 100%; height: 100%; position: fixed; overflow: hidden; }
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
             color: #fff;
             display: flex;
             flex-direction: column;
@@ -37,55 +22,42 @@
         }
 
         .header {
-            background: rgba(0, 0, 0, 0.7);
-            padding: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 3px solid #ffd700;
-            padding-top: max(12px, env(safe-area-inset-top));
+            padding-top: max(10px, env(safe-area-inset-top));
         }
 
-        .header-left, .header-right {
+        .tower-info {
             display: flex;
-            gap: 15px;
+            flex-direction: column;
             align-items: center;
-        }
-
-        .tower-hp {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: bold;
-            font-size: 14px;
+            gap: 5px;
+            font-size: 12px;
         }
 
         .hp-bar {
-            width: 80px;
-            height: 12px;
+            width: 70px;
+            height: 10px;
             background: #333;
-            border-radius: 6px;
+            border-radius: 5px;
             overflow: hidden;
             border: 2px solid #666;
         }
 
-        .hp-fill {
-            height: 100%;
-            width: 100%;
-            background: linear-gradient(90deg, #4CAF50, #8BC34A);
-            transition: width 0.3s ease;
-        }
+        .hp-fill { height: 100%; background: linear-gradient(90deg, #4CAF50, #8BC34A); transition: width 0.3s; }
+        .hp-fill.danger { background: linear-gradient(90deg, #f44336, #ff6b6b); }
 
-        .hp-fill.danger {
-            background: linear-gradient(90deg, #f44336, #ff6b6b);
-        }
+        .title { text-align: center; font-size: 18px; font-weight: bold; color: #ffd700; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); flex: 1; }
 
-        .title {
-            text-align: center;
-            font-size: 20px;
+        .info-panel {
+            display: flex;
+            gap: 20px;
+            font-size: 13px;
             font-weight: bold;
-            color: #ffd700;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
         }
 
         canvas {
@@ -94,17 +66,16 @@
             width: 100%;
             touch-action: none;
             image-rendering: crisp-edges;
-            border-bottom: 3px solid #333;
+            border-bottom: 2px solid #333;
         }
 
         .controls {
-            background: rgba(0, 0, 0, 0.85);
-            padding: 12px;
-            padding-bottom: max(12px, env(safe-area-inset-bottom));
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 10px;
+            padding-bottom: max(10px, env(safe-area-inset-bottom));
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
             border-top: 3px solid #ffd700;
         }
 
@@ -112,66 +83,54 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 10px;
+            padding: 8px;
             background: linear-gradient(135deg, #2a2a3e 0%, #1a1a2e 100%);
-            border: 3px solid #555;
-            border-radius: 8px;
+            border: 2px solid #555;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.3s;
-            min-width: 85px;
-            font-size: 12px;
+            transition: all 0.2s;
+            font-size: 11px;
             font-weight: bold;
             color: #fff;
-            -webkit-appearance: none;
+            position: relative;
         }
 
-        .card-emoji {
-            font-size: 32px;
-            margin-bottom: 5px;
-        }
-
-        .card:active {
-            transform: scale(0.95);
-        }
-
+        .card-emoji { font-size: 24px; margin-bottom: 3px; }
+        .card-cost { background: #ca32ca; padding: 1px 4px; border-radius: 3px; font-size: 9px; }
+        .card-ready { position: absolute; top: 2px; right: 2px; width: 6px; height: 6px; background: #4CAF50; border-radius: 50%; }
+        .card:active { transform: scale(0.95); }
         .card.selected {
             border-color: #ffd700;
             background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
             color: #000;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
         }
 
-        .card-cost {
-            background: #ca32ca;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 11px;
-        }
-
-        .elixir-bar-container {
+        .elixir-display {
+            grid-column: 1 / -1;
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-top: 8px;
-            padding: 0 10px;
-            width: 100%;
+            padding: 0 5px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 4px;
+            font-size: 12px;
         }
 
         .elixir-bar {
             flex: 1;
-            height: 10px;
+            height: 12px;
             background: #333;
-            border-radius: 5px;
+            border-radius: 6px;
             overflow: hidden;
-            border: 2px solid #666;
+            border: 1px solid #666;
         }
 
         .elixir-fill {
             height: 100%;
-            width: 0%;
             background: linear-gradient(90deg, #ca32ca, #ff1493);
             transition: width 0.1s linear;
-            box-shadow: 0 0 10px rgba(202, 50, 202, 0.8);
+            box-shadow: 0 0 8px rgba(202, 50, 202, 0.8);
         }
 
         .toast {
@@ -192,8 +151,25 @@
             font-weight: bold;
         }
 
-        .toast.show {
-            opacity: 1;
+        .toast.show { opacity: 1; }
+
+        .combo-indicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+            pointer-events: none;
+            z-index: 1500;
+            animation: comboPulse 0.6s ease-out;
+        }
+
+        @keyframes comboPulse {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
         }
 
         @supports (padding: max(0px)) {
@@ -206,90 +182,65 @@
 </head>
 <body>
     <div class="header">
-        <div class="header-left">
-            <div class="tower-hp">
-                💙 <span id="playerHp">1000</span>
-                <div class="hp-bar">
-                    <div id="playerHpBar" class="hp-fill"></div>
-                </div>
-            </div>
+        <div class="tower-info">
+            <div>💙 <span id="playerHp">1000</span></div>
+            <div class="hp-bar"><div id="playerHpBar" class="hp-fill"></div></div>
         </div>
-        <div class="title">⚔️ MINI CLASH PREMIUM ⚔️</div>
-        <div class="header-right">
-            <div class="tower-hp">
-                <div class="hp-bar">
-                    <div id="enemyHpBar" class="hp-fill"></div>
-                </div>
-                <span id="enemyHp">1000</span> ❤️
-            </div>
+        <div class="title">⚔️ ROYALE LEGENDS ⚔️</div>
+        <div class="info-panel">
+            <div>🏆 <span id="score">0</span></div>
+            <div>🕐 <span id="timer">2:00</span></div>
+        </div>
+        <div class="tower-info">
+            <div class="hp-bar"><div id="enemyHpBar" class="hp-fill"></div></div>
+            <div><span id="enemyHp">1000</span> ❤️</div>
         </div>
     </div>
 
     <canvas id="gameCanvas"></canvas>
 
     <div class="controls">
-        <div class="elixir-bar-container">
-            <span style="font-size: 14px;">⚡ Elixir:</span>
-            <div class="elixir-bar">
-                <div id="elixirFill" class="elixir-fill"></div>
-            </div>
-            <span id="elixirText" style="min-width: 30px; text-align: right; font-weight: bold;">0/10</span>
+        <div class="elixir-display">
+            <span>⚡</span>
+            <div class="elixir-bar"><div id="elixirFill" class="elixir-fill"></div></div>
+            <span id="elixirText">0/10</span>
         </div>
-        <div id="card-knight" class="card">
-            <div class="card-emoji">🗡️</div>
-            <div>Cavaleiro</div>
-            <div class="card-cost">3</div>
-        </div>
-        <div id="card-giant" class="card">
-            <div class="card-emoji">🛡️</div>
-            <div>Gigante</div>
-            <div class="card-cost">5</div>
-        </div>
-        <div id="card-archer" class="card">
-            <div class="card-emoji">🏹</div>
-            <div>Arqueiro</div>
-            <div class="card-cost">3</div>
-        </div>
-        <div id="card-bomb" class="card">
-            <div class="card-emoji">💣</div>
-            <div>Bomba</div>
-            <div class="card-cost">6</div>
-        </div>
+        <div id="card-knight" class="card" data-type="knight"><div class="card-emoji">🗡️</div><div>Cavaleiro</div><div class="card-cost">3</div><div class="card-ready"></div></div>
+        <div id="card-tank" class="card" data-type="tank"><div class="card-emoji">🛡️</div><div>Golém</div><div class="card-cost">5</div><div class="card-ready"></div></div>
+        <div id="card-archer" class="card" data-type="archer"><div class="card-emoji">🏹</div><div>Arqueiro</div><div class="card-cost">3</div><div class="card-ready"></div></div>
+        <div id="card-mage" class="card" data-type="mage"><div class="card-emoji">✨</div><div>Mago</div><div class="card-cost">4</div><div class="card-ready"></div></div>
+        <div id="card-assassin" class="card" data-type="assassin"><div class="card-emoji">🔪</div><div>Assassino</div><div class="card-cost">3</div><div class="card-ready"></div></div>
+        <div id="card-cleric" class="card" data-type="cleric"><div class="card-emoji">⚕️</div><div>Clérigo</div><div class="card-cost">4</div><div class="card-ready"></div></div>
+        <div id="card-dragon" class="card" data-type="dragon"><div class="card-emoji">🐉</div><div>Dragão</div><div class="card-cost">7</div><div class="card-ready"></div></div>
+        <div id="card-necro" class="card" data-type="necro"><div class="card-emoji">💀</div><div>Necro</div><div class="card-cost">6</div><div class="card-ready"></div></div>
     </div>
 
     <div id="toast" class="toast"></div>
 
     <script>
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-        function playSound(frequency, duration, type = 'sine', volume = 0.3) {
+        function playSound(freq, dur, type = 'sine', vol = 0.2) {
             try {
                 const osc = audioContext.createOscillator();
                 const gain = audioContext.createGain();
                 osc.connect(gain);
                 gain.connect(audioContext.destination);
-                osc.frequency.value = frequency;
+                osc.frequency.value = freq;
                 osc.type = type;
-                gain.gain.setValueAtTime(volume, audioContext.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                gain.gain.setValueAtTime(vol, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + dur);
                 osc.start(audioContext.currentTime);
-                osc.stop(audioContext.currentTime + duration);
+                osc.stop(audioContext.currentTime + dur);
             } catch(e) {}
         }
 
         const sounds = {
-            spawn: () => playSound(400, 0.1, 'sine', 0.2),
-            hit: () => playSound(200, 0.15, 'sine', 0.25),
-            victory: () => {
-                playSound(523, 0.2, 'sine', 0.3);
-                setTimeout(() => playSound(659, 0.2, 'sine', 0.3), 150);
-                setTimeout(() => playSound(784, 0.3, 'sine', 0.3), 300);
-            },
-            defeat: () => {
-                playSound(200, 0.3, 'sine', 0.3);
-                setTimeout(() => playSound(150, 0.3, 'sine', 0.3), 200);
-            },
-            select: () => playSound(800, 0.1, 'sine', 0.2)
+            spawn: () => playSound(400, 0.1),
+            hit: () => playSound(200, 0.12),
+            victory: () => { playSound(523, 0.2); setTimeout(() => playSound(659, 0.2), 150); setTimeout(() => playSound(784, 0.3), 300); },
+            defeat: () => { playSound(200, 0.3); setTimeout(() => playSound(150, 0.3), 200); },
+            select: () => playSound(800, 0.1),
+            combo: () => playSound(1047, 0.15)
         };
 
         const canvas = document.getElementById("gameCanvas");
@@ -303,28 +254,32 @@
             ctx.scale(dpr, dpr);
         }
 
-        let playerElixir = 0;
-        let enemyElixir = 0;
-        let selectedUnit = null;
-        let myTroops = [];
-        let enemyTroops = [];
+        let playerElixir = 0, enemyElixir = 0, selectedUnit = null;
+        let myTroops = [], enemyTroops = [];
         let playerTower, enemyTower;
         let canvasWidth, canvasHeight;
-        let gameOver = false;
+        let gameOver = false, gameTime = 120;
         let particles = [];
+        let playerScore = 0;
+        let comboCount = 0, lastComboTime = 0;
+        let unitCooldowns = {};
 
-        const unitTypes = {
-            knight: { cost: 3, hp: 150, speed: 2, radius: 10, color: '#00bcd4', emoji: '🗡️', damage: 2.5, range: 20, attackSpeed: 1 },
-            giant: { cost: 5, hp: 400, speed: 0.8, radius: 16, color: '#ff9800', emoji: '🛡️', damage: 4, range: 25, attackSpeed: 1.5 },
-            archer: { cost: 3, hp: 80, speed: 2.2, radius: 8, color: '#4CAF50', emoji: '🏹', damage: 3, range: 80, attackSpeed: 2 },
-            bomb: { cost: 6, hp: 120, speed: 0.5, radius: 12, color: '#ff5252', emoji: '💣', damage: 8, range: 40, attackSpeed: 0.8, aoe: 50 }
+        const units = {
+            knight: { cost: 3, hp: 150, speed: 2, radius: 10, color: '#00bcd4', emoji: '🗡️', damage: 2.5, range: 20, atkSpd: 1, type: 'melee' },
+            tank: { cost: 5, hp: 400, speed: 0.8, radius: 16, color: '#ff9800', emoji: '🛡️', damage: 3, range: 15, atkSpd: 0.8, type: 'tank' },
+            archer: { cost: 3, hp: 80, speed: 2.2, radius: 8, color: '#4CAF50', emoji: '🏹', damage: 3, range: 100, atkSpd: 2, type: 'ranged' },
+            mage: { cost: 4, hp: 100, speed: 1.8, radius: 9, color: '#9c27b0', emoji: '✨', damage: 4, range: 90, atkSpd: 1.5, type: 'magic', aoe: 40 },
+            assassin: { cost: 3, hp: 70, speed: 3, radius: 7, color: '#e91e63', emoji: '🔪', damage: 5, range: 18, atkSpd: 2.5, type: 'melee', crit: 1.5 },
+            cleric: { cost: 4, hp: 120, speed: 1.5, radius: 10, color: '#f0e68c', emoji: '⚕️', damage: 1.5, range: 50, atkSpd: 1, type: 'support', heal: 3 },
+            dragon: { cost: 7, hp: 300, speed: 1.5, radius: 18, color: '#ff5722', emoji: '🐉', damage: 6, range: 60, atkSpd: 1, type: 'flying', aoe: 60 },
+            necro: { cost: 6, hp: 180, speed: 1.2, radius: 12, color: '#424242', emoji: '💀', damage: 4, range: 50, atkSpd: 1.2, type: 'magic', summon: true }
         };
 
         function initTowers() {
             canvasWidth = canvas.getBoundingClientRect().width;
             canvasHeight = canvas.getBoundingClientRect().height;
             playerTower = { x: canvasWidth / 2, y: canvasHeight - 40, hp: 1000, maxHp: 1000, color: '#2196F3' };
-            enemyTower = { x: canvasWidth / 2, y: 40, hp: 1000, maxHp: 1000, color: '#F44336', lastShot: 0 };
+            enemyTower = { x: canvasWidth / 2, y: 40, hp: 1000, maxHp: 1000, color: '#F44336' };
         }
 
         function selectCard(type) {
@@ -338,29 +293,19 @@
             }
         }
 
-        document.getElementById('card-knight').addEventListener('pointerdown', (e) => { e.stopPropagation(); selectCard('knight'); });
-        document.getElementById('card-giant').addEventListener('pointerdown', (e) => { e.stopPropagation(); selectCard('giant'); });
-        document.getElementById('card-archer').addEventListener('pointerdown', (e) => { e.stopPropagation(); selectCard('archer'); });
-        document.getElementById('card-bomb').addEventListener('pointerdown', (e) => { e.stopPropagation(); selectCard('bomb'); });
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
+                selectCard(card.dataset.type);
+            });
+        });
 
         canvas.addEventListener('pointerdown', (event) => {
-            if (gameOver) return;
+            if (gameOver || !selectedUnit) return;
             const rect = canvas.getBoundingClientRect();
             const x = event.clientX - rect.left;
             const y = event.clientY - rect.top;
-
-            const distToEnemy = Math.hypot(x - enemyTower.x, y - enemyTower.y);
-            if (distToEnemy < 50 && playerElixir >= 4) {
-                playerElixir -= 4;
-                enemyTower.hp -= 100;
-                createExplosion(enemyTower.x, enemyTower.y);
-                sounds.hit();
-                updateUI();
-                return;
-            }
-
-            if (!selectedUnit) return;
-            const config = unitTypes[selectedUnit];
+            const config = units[selectedUnit];
             const midpoint = canvasHeight / 2;
 
             if (y > midpoint && playerElixir >= config.cost) {
@@ -369,18 +314,42 @@
                 myTroops.push({
                     x, y, hp: config.hp, maxHp: config.hp, speed: config.speed, radius: config.radius,
                     color: config.color, emoji: config.emoji, damage: config.damage, range: config.range,
-                    attackSpeed: config.attackSpeed, lastAttack: 0, isPlayer: true, type: selectedUnit, aoe: config.aoe || 0
+                    atkSpd: config.atkSpd, lastAtk: 0, isPlayer: true, type: selectedUnit, 
+                    aoe: config.aoe, heal: config.heal, crit: config.crit, unitType: config.type
                 });
+                unitCooldowns[selectedUnit] = 30;
+                checkCombo();
                 selectCard(null);
                 updateUI();
             }
         }, { passive: false });
 
+        function checkCombo() {
+            comboCount++;
+            if (Date.now() - lastComboTime > 3000) comboCount = 1;
+            lastComboTime = Date.now();
+            if (comboCount > 1) {
+                sounds.combo();
+                showCombo(`${comboCount}X COMBO!`);
+                playerScore += comboCount * 50;
+            }
+        }
+
+        function showCombo(text) {
+            const el = document.createElement('div');
+            el.className = 'combo-indicator';
+            el.textContent = text;
+            el.style.left = (canvasWidth / 2) + 'px';
+            el.style.top = (canvasHeight / 2) + 'px';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 600);
+        }
+
         setInterval(() => {
-            if (playerElixir < 10) playerElixir += 0.15;
-            if (enemyElixir < 10) enemyElixir += 0.1;
-            if (playerElixir > 10) playerElixir = 10;
-            if (enemyElixir > 10) enemyElixir = 10;
+            if (playerElixir < 10) playerElixir += 0.1;
+            if (enemyElixir < 10) enemyElixir += 0.08;
+            Object.keys(unitCooldowns).forEach(k => { unitCooldowns[k]--; if (unitCooldowns[k] <= 0) delete unitCooldowns[k]; });
+            if (gameTime > 0 && !gameOver) gameTime--;
             updateUI();
         }, 100);
 
@@ -389,46 +358,53 @@
             document.getElementById('elixirFill').style.width = (playerElixir / 10 * 100) + '%';
             document.getElementById('playerHp').innerText = Math.max(0, Math.floor(playerTower.hp));
             document.getElementById('enemyHp').innerText = Math.max(0, Math.floor(enemyTower.hp));
+            document.getElementById('score').innerText = playerScore;
+            const mins = Math.floor(gameTime / 60);
+            const secs = gameTime % 60;
+            document.getElementById('timer').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
 
-            const playerHpPercent = Math.max(0, playerTower.hp / playerTower.maxHp * 100);
-            document.getElementById('playerHpBar').style.width = playerHpPercent + '%';
-            if (playerHpPercent < 30) document.getElementById('playerHpBar').classList.add('danger');
+            const pHpPercent = Math.max(0, playerTower.hp / playerTower.maxHp * 100);
+            document.getElementById('playerHpBar').style.width = pHpPercent + '%';
+            if (pHpPercent < 30) document.getElementById('playerHpBar').classList.add('danger');
 
-            const enemyHpPercent = Math.max(0, enemyTower.hp / enemyTower.maxHp * 100);
-            document.getElementById('enemyHpBar').style.width = enemyHpPercent + '%';
-            if (enemyHpPercent < 30) document.getElementById('enemyHpBar').classList.add('danger');
+            const eHpPercent = Math.max(0, enemyTower.hp / enemyTower.maxHp * 100);
+            document.getElementById('enemyHpBar').style.width = eHpPercent + '%';
+            if (eHpPercent < 30) document.getElementById('enemyHpBar').classList.add('danger');
+
+            document.querySelectorAll('.card').forEach(card => {
+                const type = card.dataset.type;
+                const ready = unitCooldowns[type] ? (unitCooldowns[type] <= 0) : true;
+                card.style.opacity = ready ? '1' : '0.5';
+            });
         }
 
-        function createExplosion(x, y) {
-            for (let i = 0; i < 10; i++) {
+        function createExplosion(x, y, color = '#ff6b6b') {
+            for (let i = 0; i < 12; i++) {
                 particles.push({
-                    x, y, vx: (Math.random() - 0.5) * 4, vy: (Math.random() - 0.5) * 4 - 1, life: 0.5,
-                    color: ['#ff6b6b', '#ffd700', '#ff9800'][Math.floor(Math.random() * 3)]
+                    x, y, vx: (Math.random() - 0.5) * 5, vy: (Math.random() - 0.5) * 5 - 1,
+                    life: 0.5, color, size: Math.random() * 4 + 3
                 });
             }
         }
 
         function enemyAI() {
-            if (enemyTower.hp <= 0) return;
-            let hasGiant = myTroops.some(t => t.type === 'giant');
-            if (hasGiant && enemyElixir >= 3) {
-                enemyElixir -= 3;
-                spawnEnemy('knight');
-            } else if (enemyElixir >= 5 && Math.random() < 0.02) {
-                enemyElixir -= 5;
-                spawnEnemy(['knight', 'giant', 'archer'][Math.floor(Math.random() * 3)]);
+            if (enemyTower.hp <= 0 || gameOver) return;
+            if (Math.random() < 0.02 && enemyElixir >= 3) {
+                const unitKeys = Object.keys(units);
+                const randomUnit = unitKeys[Math.floor(Math.random() * unitKeys.length)];
+                const config = units[randomUnit];
+                if (enemyElixir >= config.cost) {
+                    enemyElixir -= config.cost;
+                    enemyTroops.push({
+                        x: enemyTower.x + (Math.random() * canvasWidth * 0.3 - canvasWidth * 0.15),
+                        y: enemyTower.y + 50,
+                        hp: config.hp, maxHp: config.hp, speed: config.speed, radius: config.radius,
+                        color: config.color, emoji: config.emoji, damage: config.damage, range: config.range,
+                        atkSpd: config.atkSpd, lastAtk: 0, isPlayer: false, type: randomUnit,
+                        aoe: config.aoe, heal: config.heal, crit: config.crit, unitType: config.type
+                    });
+                }
             }
-        }
-
-        function spawnEnemy(type) {
-            const config = unitTypes[type];
-            enemyTroops.push({
-                x: enemyTower.x + (Math.random() * canvasWidth * 0.4 - canvasWidth * 0.2),
-                y: enemyTower.y + 50,
-                hp: config.hp, maxHp: config.hp, speed: config.speed, radius: config.radius,
-                color: config.color, emoji: config.emoji, damage: config.damage, range: config.range,
-                attackSpeed: config.attackSpeed, lastAttack: 0, isPlayer: false, type: type, aoe: config.aoe || 0
-            });
         }
 
         function drawUnit(unit) {
@@ -447,9 +423,9 @@
             ctx.fillText(unit.emoji, unit.x, unit.y);
 
             ctx.fillStyle = '#333';
-            ctx.fillRect(unit.x - unit.radius, unit.y - unit.radius - 10, unit.radius * 2, 4);
+            ctx.fillRect(unit.x - unit.radius, unit.y - unit.radius - 12, unit.radius * 2, 4);
             ctx.fillStyle = unit.isPlayer ? '#4CAF50' : '#ff3333';
-            ctx.fillRect(unit.x - unit.radius, unit.y - unit.radius - 10, (unit.hp / unit.maxHp) * unit.radius * 2, 4);
+            ctx.fillRect(unit.x - unit.radius, unit.y - unit.radius - 12, (unit.hp / unit.maxHp) * unit.radius * 2, 4);
         }
 
         function updateUnits(allies, enemies, targetTower) {
@@ -460,7 +436,7 @@
                 let target = null, minDist = Infinity;
                 for (let e of enemies) {
                     let d = Math.hypot(e.x - u.x, e.y - u.y);
-                    if (d < minDist) { minDist = d; target = e; }
+                    if (d < minDist && d < 200) { minDist = d; target = e; }
                 }
 
                 let distToTower = Math.hypot(targetTower.x - u.x, targetTower.y - u.y);
@@ -471,19 +447,20 @@
                         u.x += Math.cos(angle) * u.speed;
                         u.y += Math.sin(angle) * u.speed;
                     } else {
-                        u.lastAttack++;
-                        if (u.lastAttack > 30 / u.attackSpeed) {
-                            target.hp -= u.damage;
+                        u.lastAtk++;
+                        if (u.lastAtk > 30 / u.atkSpd) {
+                            let dmg = u.damage * (u.crit && Math.random() < 0.3 ? u.crit : 1);
+                            target.hp -= dmg;
                             sounds.hit();
+                            createExplosion(target.x, target.y, '#ff6b6b');
                             if (u.aoe) {
                                 for (let e of enemies) {
                                     if (Math.hypot(e.x - target.x, e.y - target.y) < u.aoe) {
-                                        e.hp -= u.damage * 0.5;
+                                        e.hp -= dmg * 0.5;
                                     }
                                 }
-                                createExplosion(target.x, target.y);
                             }
-                            u.lastAttack = 0;
+                            u.lastAtk = 0;
                         }
                     }
                 } else if (targetTower.hp > 0 && distToTower > 40) {
@@ -491,11 +468,17 @@
                     u.x += Math.cos(angle) * u.speed;
                     u.y += Math.sin(angle) * u.speed;
                 } else if (targetTower.hp > 0) {
-                    u.lastAttack++;
-                    if (u.lastAttack > 30 / u.attackSpeed) {
+                    u.lastAtk++;
+                    if (u.lastAtk > 30 / u.atkSpd) {
                         targetTower.hp -= u.damage;
                         sounds.hit();
-                        u.lastAttack = 0;
+                        u.lastAtk = 0;
+                    }
+                } else if (u.heal) {
+                    for (let ally of allies) {
+                        if (Math.hypot(ally.x - u.x, ally.y - u.y) < 100 && ally.hp < ally.maxHp) {
+                            ally.hp = Math.min(ally.maxHp, ally.hp + u.heal);
+                        }
                     }
                 }
                 drawUnit(u);
@@ -538,7 +521,7 @@
                 ctx.fillStyle = p.color;
                 ctx.globalAlpha = p.life;
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.globalAlpha = 1;
                 if (p.life <= 0) particles.splice(i, 1);
@@ -549,11 +532,22 @@
             if (playerTower.hp <= 0 && !gameOver) {
                 gameOver = true;
                 sounds.defeat();
-                showToast('😢 VOCÊ PERDEU!', 'red');
+                showToast('😢 VOCÊ PERDEU! Pontos: ' + playerScore, 'red');
             } else if (enemyTower.hp <= 0 && !gameOver) {
                 gameOver = true;
                 sounds.victory();
-                showToast('🎉 VITÓRIA!', 'gold');
+                playerScore += 1000;
+                showToast('🎉 VITÓRIA! Pontos: ' + playerScore, 'gold');
+            } else if (gameTime <= 0 && !gameOver) {
+                gameOver = true;
+                if (playerTower.hp > enemyTower.hp) {
+                    sounds.victory();
+                    playerScore += 500;
+                    showToast('🎯 EMPATE! Você venceu! Pontos: ' + playerScore, 'gold');
+                } else {
+                    sounds.defeat();
+                    showToast('⏰ TEMPO ACABOU! Pontos: ' + playerScore, 'red');
+                }
             } else {
                 requestAnimationFrame(gameLoop);
             }
